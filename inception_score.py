@@ -92,4 +92,4 @@ if __name__ == '__main__':
     IgnoreLabelDataset(cifar)
 
     print ("Calculating Inception Score...")
-    print (inception_score(IgnoreLabelDataset(cifar), cuda=True, batch_size=32, resize=True, splits=10))
+    print (inception_score(IgnoreLabelDataset(cifar), cuda=False, batch_size=2, resize=True, splits=10))
