@@ -13,10 +13,13 @@ def two_point_interpolation(tensor1, tensor2, t=0.5, do_scale=True):
     else:
         return resulting_tensor
 
-def n_point_interpolation(value_tensor, coef_tensor, do_scale=True):
+def n_point_interpolation(tensors, coef_tensor, do_scale=False):
     assert coef_tensor.sum(0) == 1
     scaling_factor = (coef_tensor**2).sum(0)**0.5
-    resulting_tensor = value_tensor.sum(0)
+#     print(coef_tensor.size())
+#     print(tensors.size())
+    resulting_tensor = (coef_tensor.unsqueeze(1) * tensors).sum(0).view(1, 100, 1, 1)
+#     print(resulting_tensor.size())
     if do_scale:
         return resulting_tensor / scaling_factor
     else:
