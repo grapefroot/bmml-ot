@@ -34,26 +34,89 @@
 \begin{document}
 \maketitle
 
-\begin{abstract}
-    This is an abstract for the project.
-\end{abstract}
-
 
 % keywords can be removed
 \keywords{GAN, deep learning, optimal transport, VAE, variational autoencoder, autoencoder, generative adversarial network}
 
 
 \section{Introduction}
-This is a space for introduction.
+
+We study the paper \cite{main} 
+exploring latent space modifications 
+for generative models. The most known generative models 
+are Generative Adversarial Networks (GANs) and Variational 
+Auto Encoders (VAEs). The problem is that latent space operations
+can create distributional mismatch, and the paper we study 
+tries to resolve these mismatches with methods of 
+optimal transport.
+
+The rest of the report is organized as follows. In the 
+Theoretical Explanation chapter we summarize the points presented
+in the paper. In the Workflow description, we describe what 
+cases and extensions we study. In the Experimental Results
+chapter we present outcomes of our experiments.
+Later, in Team contribution, we explain what is done by each team member. Finally, references are given.
+
 
 \section{Theoretical Explanation}
 
-\section{Workflow desription}
+The distributional mismatch is usually addressed in the following
+steps. First, intuitive operator $y$ is constructed. Then resulting distribution is computed. After that, some cost is selected.
+And we search for a minimal modification $\tilde{y}$ in terms of
+cost, such that distribution is brought back to the prior.
+
+These are examples with provided Gaussian Matched operation:
+
+\begin{enumerate}
+    \item 2-point interpolation. Here, $y = tz_1 + (1-t)z_2$. 
+        To match the operation, result is divided by
+        $\sqrt{t^2 + (1-t)^2}$.
+    \item n-point interpolation. We weight 
+        $y=\sum t_i z_i$, with sum of weights begin equal to 1.
+        After that, divide by the euclidean norm of weights.
+    \item Vicinity sampling. $y_j = z_1 + \varepsilon u_j$. 
+        To match the operation, we divide by 
+        $\sqrt{1 + \varepsilon^2}$.
+    \item Analogies. The expression in terms of latent algebra
+        looks like $z_3 + (z_2 - z_1)$. Since we work with
+        triangle, in some sense we match with division on 
+        $\sqrt{3}$.
+\end{enumerate}
+
+\section{Workflow Desription}
+
+It was decided to separate the project into three parts:
+
+\begin{enumerate}
+    \item Reproducing the paper. This part is dedicated to GANs. 
+        Here we train and adopt DCGAN,
+        compute inception score, evaluate results on 
+        different datasets.
+
+    \item Applying distribution matching for VAE. Here, we work
+        only with interpolation models.
+
+    \item Correcting missing values for VAE. We take 
+        initial image, corrupt it in different way, 
+        and then reconstruct 
+        it using optimal transport distribution matching.
+\end{enumerate}
 
 \section{Experimental Results}
 
+TBD
+
 \section{Team contribution}
 
+\begin{enumerate}
+        \item Dmitriy Salnikov: DCGAN experiments,
+            distribution matching operations, presentation,
+            team management, theoretical part of the paper
+        \item Aliaksandr Nekrashevich: VAE experiments,
+            inception score for DCGANs, report
+        \item Nurlan Shagadatov: DCGAN experiments,
+            missing values with VAE, presentation
+\end{enumerate}
 
 \bibliographystyle{unsrt}
 \bibliography{references}
