@@ -154,7 +154,8 @@ We compare initial and matched distributions using two approaches
 \end{itemize}
 For a given generator the inception score is just
     $$
-    \exp{E_{p_x}KL(p(y|x) || p(y))}, p_x \sim G \text{ where } p(y) = \int p(y|x)p_g(x) dx \approx \frac{1}{N}\sum_{i=1}^{N} p(y_i|x_i) \text{; where } x_i \sim G
+    \exp \left\{ {E_{p_x}KL(p(y|x) || p(y))} \right\},\quad p_x \sim G$$
+    $$ \text{ where } p(y) = \int p(y|x)p_g(x) dx \approx \frac{1}{N}\sum_{i=1}^{N} p(y_i|x_i), \quad  x_i \sim G
     $$
     
 \subsection{DCGAN and VAE models}
@@ -175,37 +176,36 @@ We begin with the classic example of 2-point interpolation: Figure 1 shows
 three examples per dataset for an interpolation between 2 points in latent space. Each example is first done via matched interpolation (upper raw), then with linear interpolation(lower raw). It is immediately obvious that linear interpolation produces inferior results with generally more blurry, less saturated and less detailed output images. Differences between the two types of interpolation methods for CelebA are much more subtle to the point that they are virtually indistinguishable when viewed side-by-side. This is not an inconsistency though: while distribution mismatch can cause large differences, it can also happen that the model generalizes well enough that it does not matter.
 \subsection{4 point interpolation}
 An even stronger effect can be observed when we do 4-point interpolation,
-showcased in Figure 2 (LSUN) and Figure 4 (LLD icons). The higher resolution of the LSUN output highlights the very apparent loss of detail and increasing prevalence of artifacts towards the midpoint in the linear version, compared to matched interpolation.
+showcased in Figure 2 (LSUN) and Figure 4 (LLD icons). In our experiment we constructed interpolation between 4 sampled points which are corresponded to the corners of 2 squares of side 5 images on Figure 2,3, and 4. Left is interpolation using matched operation, right is the linear interpolation.  The higher resolution of the LSUN output highlights the very apparent loss of detail and increasing prevalence of artifacts towards the midpoint in the linear version, compared to matched interpolation. 
 
 
 
 \begin{center}
 \begin{figure}
-    \includegraphics[width=\linewidth]{CelebA/images/LSUN_int4_1.png}
-    \caption{4 point interpolation (LSUN)}
+    \includegraphics[width=0.95\linewidth]{CelebA/images/LSUN_int4_1.png}
+    \caption{4 point interpolation (LSUN); left: matched, right: linear}
 \end{figure}
 \end{center}
 
 \begin{center}
 \begin{figure}
-    \includegraphics[width=\linewidth]{CelebA/images/CelebA_int4_2.png}
-    \caption{4 point interpolation (CelebA)}
+    \includegraphics[width=0.95\linewidth]{CelebA/images/CelebA_int4_2.png}
+    \caption{4 point interpolation (CelebA); left: matched, right: linear}
 \end{figure}
 \end{center}
 
 \begin{center}
 \begin{figure}
-    \includegraphics[width=\linewidth]{CelebA/images/LLD_int4_1.png}
-    \caption{4 point interpolation (LLD icon)}
+    \includegraphics[width=0.95\linewidth]{CelebA/images/LLD_int4_1.png}
+    \caption{4 point interpolation (LLD icon); left: matched, right: linear}
 \end{figure}
 \end{center}
 
 
 \subsection{Random walk (vicinity sampling)}
-An interesting property of matched vicinity sampling is that we can obtain a
-random walk in the latent space by applying it repeatedly: we start at a point $y_0 = z$ drawn from the prior, and then obtain point $y_i$ by sampling a single point in the vicinity of $y_{i-1}$ , using some fixed ’step size’ $\varepsilon$ .We show an example of such a walk in Figure 5, using $\varepsilon$ = 0.5. As a result of the repeated application of the vicinity sampling operation, the divergence from the prior distribution in the non-matched
+An intuitive meaning of latent space can be obtain by a random walk through latent manifold, which leads to the interesting property of matched vicinity sampling. we start at a point $y_0 = z$ drawn from the prior, and then obtain point $y_i$ by sampling a single point in the vicinity of $y_{i-1}$ , using some fixed ’step size’ $\varepsilon$. We show an example of such a walk in Figure 5 (left to the right), using $\varepsilon$ = 0.5. As a result of the repeated application of the vicinity sampling operation, the divergence from the prior distribution in the non-matched
 case becomes stronger with each step, resulting in completely unrecognizable output images on the LSUN and LLD icon models. Even for the CelebA model where differences where minimal be-
-fore, they are quite apparent in this experiment. The random walk thus perfectly illustrates the need for respecting the prior distribution when performing any operation in latent space, as the adverse effects can cumulate through the repeated application of operators that do not comply to the prior distribution.
+fore, this experiment indicates disadvantages of linear interpolation. The random walk thus perfectly illustrates the need for respecting the prior distribution when performing any operation in latent space, as the error can be cumulate through the repeated application of operators that do not correspond to the prior distribution.
 
 \begin{center}
 \begin{figure}
@@ -237,9 +237,28 @@ In order to quantitatively confirm the observations of the previous subsection, 
     \label{tab:my_label_2}
 \end{table}
 \subsection{VAE results}
-In addition, we conducted the same experiments for Variational Autoencoder trained on Labelled Faces in the Wild Dataset. Unfortunately, the difference between linear and matched interpolations is not obvious, although in some cases the exact interpolation generates clearer (under trained decoder conditions) images. Eventually, we attempted to reconstruct corrupted image using interpolations. Precisely, we took initial image from dataset and corrupted by changing canals of some pixels and reconstructed midpoint interpolation between two latent vectors corresponding to corrupted images. In this case also results are not satisfactory. 
+In addition, we conducted the same experiments for Variational Autoencoder trained on Labelled Faces in the Wild Dataset. Unfortunately, the difference between linear and matched interpolations is not obvious, although in some cases the exact interpolation generates clearer (under trained decoder conditions) images. Eventually, we attempted to reconstruct corrupted image using interpolations. Precisely, we took initial image from dataset and corrupted by changing canals of some pixels and reconstructed midpoint interpolation between two latent vectors corresponding to corrupted images. In this case also results are not satisfactory. Corresponding images can be found in Appendix. 
 
 
+\section{Conclusions}
+We notice that it the impact that distribution mismatch has on the result depends on how well the generator is fitted. For the biggest dataset LSUN, we obtain a very good generator, which is very sensitive to the mismatch. If the generator is not that good, the mismatch does not introduce that big of a change, as we can see on examples of VAE or DCGAN on LLD dataset.
+
+
+\section{Team contribution}
+\begin{enumerate}
+        \item Dmitriy Salnikov: DCGAN experiments,
+            distribution matching operations, presentation,
+            team management, theoretical part of the paper
+        \item Aliaksandr Nekrashevich: VAE experiments,
+            inception score for DCGANs, report
+        \item Nurlan Shagadatov: DCGAN experiments, VAE experiments, presentation
+\end{enumerate}
+
+\bibliographystyle{unsrt}
+\bibliography{references}
+
+\newpage
+\appendix
 
 \begin{center}
 \begin{figure}
@@ -252,7 +271,7 @@ In addition, we conducted the same experiments for Variational Autoencoder train
 \begin{center}
 \begin{figure}
     \includegraphics[width=\linewidth]{report/vae_int4.png}
-    \caption{VAE 4-point interpolation}
+    \caption{VAE 4-point interpolation; left: matched, right: linear}
 \end{figure}
 \end{center}
 
@@ -281,22 +300,4 @@ In addition, we conducted the same experiments for Variational Autoencoder train
     \caption{VAE missing value reconstruction}
 \end{figure}
 \end{center}
-
-\section{Conclusions}
-We notice that it the impact that distribution mismatch has on the result depends on how well the generator is fitted. For the biggest dataset LSUN, we obtain a very good generator, which is very sensitive to the mismatch. If the generator is not that good, the mismatch does not introduce that big of a change, as we can see on examples of VAE or DCGAN on LLD dataset.
-
-
-\section{Team contribution}
-\begin{enumerate}
-        \item Dmitriy Salnikov: DCGAN experiments,
-            distribution matching operations, presentation,
-            team management, theoretical part of the paper
-        \item Aliaksandr Nekrashevich: VAE experiments,
-            inception score for DCGANs, report
-        \item Nurlan Shagadatov: DCGAN experiments, VAE experiments, presentation
-\end{enumerate}
-
-\bibliographystyle{unsrt}
-\bibliography{references}
-
 \end{document}
