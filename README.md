@@ -1,3 +1,5 @@
+[Link to the presentation](https://www.overleaf.com/read/tzrmpmmtzpbc)
+
 # Optimal transport maps for distribution preserving operations on latent spaces of Generative Models
 
 ## Reproducing experiments
